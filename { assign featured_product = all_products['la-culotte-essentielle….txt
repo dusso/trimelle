@@ -1,0 +1,1747 @@
+{% assign featured_product = all_products['la-culotte-essentielle'] %}  
+  
+  
+{% comment %} Build variant map {% endcomment %}  
+{% assign variant_map = '' %}  
+<script>  
+  const variantMap = {  
+    {% for variant in featured_product.variants %}  
+      {{ variant.option1 | append: '-' | append: variant.option2 | json }}: {{ variant.id | json }},  
+      {{ variant.option2 | append: '-' | append: variant.option1 | json }}: {{ variant.id | json }}{% unless forloop.last %},{% endunless %}  
+    {% endfor %}  
+  };  
+  
+  const productPrice = {{ featured_product.price | money | json }};  
+</script>  
+  
+  
+<link rel="preconnect" href="https://fonts.googleapis.com">  
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+<link  
+  href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap"  
+  rel="stylesheet">  
+<script src="https://cdn.tailwindcss.com"></script>  
+  
+<script>  
+  tailwind.config = {  
+    theme: {  
+      extend: {  
+        colors: {  
+          cream: { 50: '#FCFBF9', 100: '#FAFAF7', 200: '#F5F3EE', 300: '#EFECE6', 400: '#E3DDD3' },  
+          choc: { 500: '#8C6858', 700: '#4A342B', 800: '#32221B', 900: '#231610' },  
+          nude: { 100: '#F2ECE4', 200: '#E6DCCF', 300: '#D5C4B1', 400: '#BFA892' }  
+        },  
+        fontFamily: {  
+          serif: ['"Cormorant Garamond"', 'Georgia', 'serif'],  
+          sans: ['"Plus Jakarta Sans"', 'sans-serif'],  
+        }  
+      }  
+    }  
+  }  
+</script>  
+  
+<style>  
+  .tl-body {  
+    background: #FAFAF7;  
+    color: #231610;  
+    font-family: 'Plus Jakarta Sans', sans-serif;  
+    -webkit-font-smoothing: antialiased;  
+  }  
+  
+  .tl-serif {  
+    font-family: 'Cormorant Garamond', Georgia, serif;  
+  }  
+  
+  .img-zoom img {  
+    transition: transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);  
+  }  
+  
+  .img-zoom:hover img {  
+    transform: scale(1.04);  
+  }  
+  
+  ::-webkit-scrollbar {  
+    width: 6px;  
+  }  
+  
+  ::-webkit-scrollbar-thumb {  
+    background: #D5C4B1;  
+    border-radius: 3px;  
+  }  
+  
+  #tl-menu-overlay.opacity-100 {  
+    background: rgba(35, 22, 16, 0.6);  
+  }  
+</style>  
+  
+<div class="tl-body">  
+  
+<!-- TOP BAR (Livraison Gratuite) -->  
+<div  
+  class="tl-topbar bg-choc-900 text-cream-100 text-xs py-2.5 px-4 tracking-wider text-center sticky top-0 z-50 border-b border-choc-800/40">  
+  <p class="font-light tracking-widest text-[11px]">  
+    {% if request.locale.iso_code == 'de' %}  
+      Kostenloser Versand — 15 Tage Rückgaberecht  
+    {% else %}  
+      {{ section.settings.topbar_text }}  
+    {% endif %}  
+  </p>  
+</div>  
+  
+<!-- HEADER -->  
+<header class="bg-cream-100/90 backdrop-blur-md fixed top-[33px] left-0 right-0 z-40 border-b border-cream-300/60">  
+  <div class="max-w-7xl mx-auto px-6 md:px-12">  
+  
+    <!-- Linha 1: logo centrado + hamburguer mobile -->  
+    <div class="h-16 flex items-center justify-center relative">  
+      <div class="flex flex-col items-center justify-center">  
+        <a href="javascript:void(0)" onclick="window.scrollTo({top:0,behavior:'smooth'});"  
+          class="tl-serif text-3xl md:text-4xl tracking-[0.18em] text-choc-900 font-medium uppercase">TRIMELLE</a>  
+       <!-- <span class="block text-[8px] tracking-[0.3em] uppercase text-choc-500 -mt-1">Entre nous, le confort change tout.</span> -->  
+      </div>  
+      <button id="tl-menu-btn" onclick="tlOpenMenu()" class="lg:hidden text-choc-900 p-2 absolute right-0">  
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"  
+            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />  
+        </svg>  
+      </button>  
+    </div>  
+  
+    <!-- Linha 2: nav desktop centralizada -->  
+    <div class="hidden lg:!flex items-center justify-center gap-10 text-xs uppercase tracking-widest text-choc-800 font-medium border-t border-cream-300/60 h-10">  
+      <a href="#produit" class="hover:text-choc-500 transition">{% if request.locale.iso_code == 'de' %}Der Slip{% else %}La Culotte{% endif %}</a>  
+      <a href="#histoire" class="hover:text-choc-500 transition">{% if request.locale.iso_code == 'de' %}Unsere Philosophie{% else %}Notre Philosophie{% endif %}</a>  
+      <!--<button onclick="openSizeModal()" class="hover:text-choc-500 uppercase transition">{% if request.locale.iso_code == 'de' %}Größentabelle{% else %}Guide des tailles{% endif %}</button>-->  
+      <a href="#faq" class="hover:text-choc-500 transition">FAQ</a>  
+    </div>  
+  
+  </div>  
+</header>  
+  
+  <!-- MENU MOBILE OVERLAY -->  
+  <div id="tl-menu-overlay"   
+       class="fixed inset-0 z-[9997] opacity-0 pointer-events-none transition-opacity duration-300"  
+       style="background:rgba(35,22,16,0.6);"   
+       onclick="tlCloseMenu()">  
+  </div>  
+  
+  <!-- MENU MOBILE DRAWER -->  
+  <div id="tl-mobile-menu"  
+       class="fixed top-0 left-0 h-full w-[80vw] max-w-xs z-[9998] bg-cream-100 shadow-2xl flex flex-col transition-transform duration-500 ease-in-out"  
+       style="transform: translateX(-100%);">  
+    <div class="flex items-center justify-between px-6 py-6 border-b border-cream-200">  
+      <button onclick="tlCloseMenu(); window.scrollTo({top:0,behavior:'smooth'});" class="tl-serif text-2xl tracking-[0.2em] text-choc-900 uppercase">Trimelle</button>  
+      <button onclick="tlCloseMenu()" class="text-choc-500 hover:text-choc-900 transition text-3xl font-light leading-none">×</button>  
+    </div>  
+    <nav class="flex flex-col px-6 py-6 gap-1 flex-1">  
+      <a href="#accueil" onclick="tlCloseMenu()"  
+        class="py-3 border-b border-cream-200 text-sm uppercase tracking-widest text-choc-900 hover:text-choc-500 transition">{% if request.locale.iso_code == 'de' %}Startseite{% else %}Accueil{% endif %}</a>  
+      <a href="#produit" onclick="tlCloseMenu()"  
+        class="py-3 border-b border-cream-200 text-sm uppercase tracking-widest text-choc-900 hover:text-choc-500 transition">{% if request.locale.iso_code == 'de' %}Der Slip{% else %}La Culotte{% endif %}</a>  
+      <a href="#histoire" onclick="tlCloseMenu()"  
+        class="py-3 border-b border-cream-200 text-sm uppercase tracking-widest text-choc-900 hover:text-choc-500 transition">{% if request.locale.iso_code == 'de' %}Unsere Philosophie{% else %}Notre Philosophie{% endif %}</a>  
+      <!-- <button onclick="openSizeModal(); tlCloseMenu()"  
+        class="py-3 border-b border-cream-200 text-sm uppercase tracking-widest text-choc-900 hover:text-choc-500 transition text-left">{% if request.locale.iso_code == 'de' %}Größentabelle{% else %}Guide des tailles{% endif %}</button>-->  
+      <a href="#faq" onclick="tlCloseMenu()"  
+        class="py-3 border-b border-cream-200 text-sm uppercase tracking-widest text-choc-900 hover:text-choc-500 transition">FAQ</a>  
+    </nav>  
+    <div class="px-6 py-6 border-t border-cream-200">  
+      {% if request.locale.iso_code == 'de' %}  
+        {% assign french_path = request.path | replace_first: '/de', '' %}  
+        {% if french_path == blank %}  
+          {% assign french_path = '/' %}  
+        {% endif %}  
+        <a href="{{ french_path }}" class="text-xs uppercase tracking-widest text-choc-500 font-medium">FR</a>  
+      {% else %}  
+        <a href="/de{{ request.path }}" class="text-xs uppercase tracking-widest text-choc-500 font-medium">DE</a>  
+      {% endif %}  
+    </div>  
+  </div>  
+  
+  <!-- HERO -->  
+<style>  
+  @media (max-width: 767px) {  
+    #accueil {  
+      display: flex;  
+      flex-direction: column;  
+      align-items: stretch;  
+      min-height: 0;  
+      padding-top: 62px;  
+    }  
+  
+    #accueil .tl-hero-media {  
+      position: relative;  
+      inset: auto;  
+      width: 100%;  
+      height: clamp(340px, 105vw, 480px);  
+      flex-shrink: 0;  
+      overflow: hidden;  
+    }  
+  
+    #accueil .tl-hero-media img {  
+      display: block;  
+      width: 100%;  
+      height: 100%;  
+      object-fit: cover;  
+      object-position: 50% 50%;  
+      opacity: 1;  
+    }  
+  
+    #accueil .tl-hero-media > div {  
+      display: none;  
+    }  
+  
+    #accueil .tl-hero-content {  
+      padding: 28px 24px 32px;  
+      background-color: #fafaf7;  
+      position: static;  
+    }  
+  
+    #accueil .tl-hero-content span.inline-block {  
+      position: absolute;  
+      top: auto;  
+      bottom: auto;  
+      left: 24px;  
+      right: auto;  
+      transform: translateY(calc(-100% - 48px));  
+      margin: 0;  
+      z-index: 2;  
+    }  
+  
+    #accueil .tl-hero-content h1 {  
+      font-size: 32px;  
+      line-height: 1.12;  
+      margin-bottom: 18px;  
+    }  
+  
+    #accueil .tl-hero-content p {  
+      margin-bottom: 24px;  
+    }  
+  
+    #accueil .tl-hero-content a[href="#histoire"] {  
+      align-self: center;  
+      padding: 8px 0;  
+      border: 0;  
+      border-radius: 0;  
+      background: transparent;  
+      box-shadow: none;  
+      font-size: 10px;  
+      text-decoration: underline;  
+      text-underline-offset: 5px;  
+    }  
+  
+    #produit .tl-product-price {  
+      font-family: 'Plus Jakarta Sans', sans-serif;  
+      font-size: 24px;  
+      font-weight: 700;  
+      line-height: 1.2;  
+      font-variant-numeric: tabular-nums;  
+    }  
+  
+  }  
+</style>  
+  
+<!-- HERO -->  
+  <section  
+    id="accueil"  
+    class="relative min-h-[88vh] flex items-center overflow-hidden bg-cream-200 pt-[113px]"  
+  >  
+  <div class="tl-hero-media absolute inset-0 z-0">  
+    {% if section.settings.hero_image %}  
+      <img  
+        src="{{ section.settings.hero_image | image_url: width: 2000 }}"  
+        alt="Trimelle hero"  
+        class="w-full h-full object-cover object-center opacity-90"  
+      >  
+    {% else %}  
+      {% liquid  
+        assign craft_desktop = section.settings.craft_image  
+        assign craft_mobile = section.settings.craft_image_mobile  
+        assign craft_fallback = craft_desktop | default: craft_mobile  
+      %}  
+  
+      <picture>  
+        {% if craft_mobile != blank %}  
+          <source  
+            media="(max-width: 767px)"  
+            srcset="{{ craft_mobile | image_url: width: 1000 }}"  
+            width="{{ craft_mobile.width }}"  
+            height="{{ craft_mobile.height }}">  
+        {% endif %}  
+  
+        {% if craft_fallback != blank %}  
+          {{  
+            craft_fallback  
+            | image_url: width: 1800  
+            | image_tag:  
+              alt: 'Finition Trimelle',  
+              class: 'block w-full h-auto',  
+              loading: 'lazy'  
+          }}  
+        {% else %}  
+          <img  
+            src="https://cdn.shopify.com/s/files/1/1061/0638/8829/files/shooting_3.jpg"  
+            alt="Finition Trimelle"  
+            class="block w-full h-auto"  
+            loading="lazy">  
+        {% endif %}  
+      </picture>  
+  
+    {% endif %}  
+  
+    <div class="absolute inset-0 bg-gradient-to-r from-cream-100/95 via-cream-100/70 to-transparent"></div>  
+    <div class="absolute inset-0 bg-gradient-to-t from-cream-100 via-transparent to-transparent md:hidden"></div>  
+  </div>  
+  
+  <div class="tl-hero-content relative z-10 max-w-7xl mx-auto px-6 md:px-12 py-20 w-full">  
+    <div class="max-w-xl text-choc-900">  
+      <span  
+        class="inline-block uppercase tracking-[0.3em] text-[11px] font-semibold text-choc-500 mb-4 bg-cream-50/80 px-3 py-1 rounded-full border border-cream-300"  
+      >  
+        {{ section.settings.hero_badge }}  
+      </span>  
+  
+      <h1  
+        class="tl-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-[1.08] font-normal tracking-tight mb-6"  
+      >  
+        {{ section.settings.hero_title }}<br>  
+        <span class="italic font-light text-choc-700">  
+          {{ section.settings.hero_subtitle }}  
+        </span>  
+      </h1>  
+  
+      <p class="text-base md:text-lg text-choc-800/80 font-light leading-relaxed mb-8 max-w-md">  
+        {{ section.settings.hero_description }}  
+      </p>  
+  
+      <div class="flex flex-col sm:flex-row gap-4">  
+        <a  
+          href="#produit"  
+          class="inline-flex justify-center items-center px-8 py-4 bg-choc-900 text-cream-50 text-xs uppercase tracking-[0.2em] font-medium rounded-sm hover:bg-choc-800 transition shadow-md"  
+        >  
+          {{ section.settings.hero_cta_primary }}  
+        </a>  
+  
+        <a  
+          href="#histoire"  
+          class="inline-flex justify-center items-center px-8 py-4 border border-choc-800/40 text-choc-900 text-xs uppercase tracking-[0.2em] font-medium rounded-sm hover:bg-cream-100/80 transition"  
+        >  
+          {{ section.settings.hero_cta_secondary }}  
+        </a>  
+      </div>  
+    </div>  
+  </div>  
+</section>  
+  
+  
+  <!-- BENEFITS -->  
+  <section class="border-y border-cream-300 bg-cream-100 py-10 px-6">  
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-center">  
+      <div class="flex flex-col items-center group">  
+        <div  
+          class="w-12 h-12 rounded-full bg-cream-200 border border-cream-300/80 flex items-center justify-center mb-4 text-choc-800 group-hover:bg-choc-900 group-hover:text-cream-50 transition duration-300">  
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">  
+            <path stroke-linecap="round" stroke-linejoin="round"  
+              d="M12 21a9 9 0 0 1-9-9c0-4.97 4.03-9 9-9s9 4.03 9 9a9 9 0 0 1-9 9Z" />  
+          </svg>  
+        </div>  
+        <h3 class="tl-serif text-xl font-medium text-choc-900 mb-1">{{ section.settings.benefit_1_title }}</h3>  
+        <p class="text-sm text-choc-700/70 font-light max-w-xs leading-relaxed">{{ section.settings.benefit_1_text }}  
+        </p>  
+      </div>  
+      <div class="flex flex-col items-center group">  
+        <div  
+          class="w-12 h-12 rounded-full bg-cream-200 border border-cream-300/80 flex items-center justify-center mb-4 text-choc-800 group-hover:bg-choc-900 group-hover:text-cream-50 transition duration-300">  
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">  
+            <path stroke-linecap="round" stroke-linejoin="round"  
+              d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />  
+          </svg>  
+        </div>  
+        <h3 class="tl-serif text-xl font-medium text-choc-900 mb-1">{{ section.settings.benefit_2_title }}</h3>  
+        <p class="text-sm text-choc-700/70 font-light max-w-xs leading-relaxed">{{ section.settings.benefit_2_text }}  
+        </p>  
+      </div>  
+      <div class="flex flex-col items-center group">  
+        <div  
+          class="w-12 h-12 rounded-full bg-cream-200 border border-cream-300/80 flex items-center justify-center mb-4 text-choc-800 group-hover:bg-choc-900 group-hover:text-cream-50 transition duration-300">  
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">  
+            <path stroke-linecap="round" stroke-linejoin="round"  
+              d="M12 3v18m0-18c-2.5 0-5 2.239-5 5 0 2.239 1.5 4 3 6m2-11c2.5 0 5 2.239 5 5 0 2.239-1.5 4-3 6" />  
+          </svg>  
+        </div>  
+        <h3 class="tl-serif text-xl font-medium text-choc-900 mb-1">{{ section.settings.benefit_3_title }}</h3>  
+        <p class="text-sm text-choc-700/70 font-light max-w-xs leading-relaxed">{{ section.settings.benefit_3_text }}  
+        </p>  
+      </div>  
+    </div>  
+  </section>  
+  
+  <style>  
+  @media (max-width: 767px) {  
+    #produit .tl-product-gallery {  
+      aspect-ratio: 8 / 8;  
+      border: 0;  
+      border-radius: 0;  
+      box-shadow: none;  
+      background: #fff;  
+    }  
+  
+    #produit #tl-carousel {  
+      width: 100% !important;  
+      gap: 16px;  
+    }  
+  
+    #produit #tl-carousel > div {  
+      width: 70% !important;  
+      flex: 0 0 80%;  
+      border-radius: 0;  
+      overflow: hidden;  
+    }  
+  
+    #produit #tl-carousel img {  
+      border-radius: 0;  
+    }  
+  }  
+</style>  
+  
+<style>  
+  /* Tablet e desktop: galeria à esquerda, conteúdo à direita */  
+  @media (min-width: 768px) {  
+  
+  .tl-topbar {  
+    position: static;  
+  }  
+  
+    #produit > .grid {  
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);  
+      /* gap: clamp(24px, 3vw, 48px); */  
+      gap: 20px;  
+      align-items: start;  
+    }  
+  
+    #produit > .grid > div {  
+      grid-column: auto;  
+      min-width: 0;  
+    }  
+  
+    #produit .tl-product-gallery {  
+      aspect-ratio: auto;  
+      overflow: visible;  
+      border: 0;  
+      border-radius: 0;  
+      box-shadow: none;  
+      background: transparent;  
+    }  
+  
+    #produit #tl-carousel {  
+      display: grid;  
+      grid-template-columns: minmax(0, 1fr);  
+      gap: 12px;  
+      width: 100% !important;  
+      height: auto;  
+      transform: none !important;  
+      transition: none;  
+    }  
+  
+    #produit #tl-carousel > div {  
+      width: 100% !important;  
+      height: auto;  
+      min-width: 0;  
+      aspect-ratio: 4 / 5;  
+      overflow: hidden;  
+      border-radius: 0;  
+    }  
+  
+    #produit #tl-carousel img {  
+      display: block;  
+      width: 100%;  
+      height: 100%;  
+      object-fit: cover;  
+      border-radius: 0;  
+    }  
+  
+    #produit #tl-carousel-dots {  
+      display: none !important;  
+    }  
+  }  
+  
+  /* Desktop: duas fotos por linha */  
+  @media (min-width: 1024px) {  
+    #produit #tl-carousel {  
+      grid-template-columns: repeat(2, minmax(0, 1fr));  
+    }  
+  }  
+</style>  
+  
+  
+<style>  
+  @media (min-width: 768px) {  
+    #shopify-section-{{ section.id }} {  
+      overflow-x: clip !important;  
+      overflow-y: visible !important;  
+    }  
+  
+    #produit .tl-product-info {  
+      position: sticky;  
+      top: var(--tl-info-sticky-top, 80px);  
+      align-self: start;  
+    }  
+  }  
+</style>  
+  
+  
+<style>  
+  @media (max-width: 767px) {  
+    #produit .tl-product-info {  
+      box-sizing: border-box;  
+      min-width: 0;  
+      padding-right: 24px;  
+    }  
+  }  
+</style>  
+  
+  
+<style>  
+  .tl-price-note-mobile {  
+    display: none;  
+  }  
+  
+  @media (max-width: 767px) {  
+    #produit .tl-purchase-row {  
+      flex-wrap: nowrap;  
+      gap: 12px;  
+    }  
+  
+    #produit .tl-purchase-row > div:first-child {  
+      flex-shrink: 0;  
+    }  
+  
+    #produit .tl-purchase-price {  
+      flex: 1;  
+      min-width: 0;  
+      text-align: right;  
+    }  
+  
+    #tl-progressive-selection-subtotal {  
+      white-space: nowrap;  
+    }  
+  
+    #tl-progressive-unit-price .tl-price-note-desktop {  
+      display: none;  
+    }  
+  
+    #tl-progressive-unit-price .tl-price-note-mobile {  
+      display: inline;  
+    }  
+  }  
+</style>  
+  
+  
+<style>  
+  @media (max-width: 767px) {  
+    #produit .tl-sizes-guide-row {  
+      display: flex;  
+      align-items: center;  
+      gap: 10px;  
+    }  
+  
+    #produit #tl-progressive-sizes {  
+      flex-shrink: 0;  
+      flex-wrap: nowrap;  
+      gap: 6px;  
+    }  
+  
+    #produit .tl-size-guide {  
+      margin: 0 0 0 auto;  
+      min-width: 0;  
+      min-height: 44px;  
+      gap: 5px;  
+      font-size: 10px;  
+      line-height: 1.3;  
+      text-align: left;  
+    }  
+  
+    #produit .tl-size-guide svg {  
+      flex-shrink: 0;  
+      width: 16px;  
+      height: 16px;  
+    }  
+  
+    #produit .tl-size-guide span {  
+      white-space: normal;  
+    }  
+  }  
+</style>  
+  
+  
+<style>  
+  #produit .tl-buy-layout {  
+    display: grid;  
+    grid-template-columns: auto minmax(0, 1fr);  
+    column-gap: 16px;  
+    align-items: center;  
+  }  
+  
+  #produit .tl-buy-label {  
+    grid-column: 1 / -1;  
+    grid-row: 1;  
+  }  
+  
+  #produit .tl-buy-quantity {  
+    grid-column: 1;  
+    grid-row: 2;  
+  }  
+  
+  #produit .tl-buy-price {  
+    grid-column: 1 / -1;  
+    grid-row: 1;  
+    display: flex;  
+    align-items: baseline;  
+    justify-content: space-between;  
+    gap: 10px;  
+    margin-bottom: 12px;  
+  }  
+  
+  #produit #tl-progressive-unit-price {  
+  order: 1;  
+  text-align: left;  
+  display: none !important;  
+}  
+  
+  #produit #tl-progressive-selection-subtotal {  
+    order: 2;  
+    text-align: right;  
+  }  
+  
+  
+  #produit .tl-buy-price > p {  
+    margin: 0;  
+  }  
+  
+  
+  #produit .tl-buy-error {  
+    grid-column: 1 / -1;  
+    grid-row: 3;  
+  }  
+  
+  #produit .tl-buy-add {  
+    grid-column: 1 / -1;  
+    grid-row: 4;  
+  }  
+  
+  @media (max-width: 767px) {  
+    #produit .tl-buy-layout {  
+      column-gap: 10px;  
+    }  
+  
+    #produit .tl-buy-price {  
+      grid-column: 1 / -1;  
+      grid-row: 1;  
+      margin-bottom: 12px;  
+    }  
+  
+    #produit .tl-buy-label {  
+      position: absolute;  
+      width: 1px;  
+      height: 1px;  
+      padding: 0;  
+      margin: -1px;  
+      overflow: hidden;  
+      clip-path: inset(50%);  
+      white-space: nowrap;  
+    }  
+  
+    #produit .tl-buy-quantity {  
+      grid-column: 1;  
+      grid-row: 2;  
+      height: 48px;  
+    }  
+  
+    #produit .tl-buy-quantity input {  
+      width: 36px;  
+    }  
+  
+    #produit .tl-buy-add {  
+      grid-column: 2;  
+      grid-row: 2;  
+      margin-top: 0;  
+      min-height: 48px;  
+      padding: 10px 8px;  
+      font-size: 10px;  
+      line-height: 1.3;  
+      letter-spacing: 0.04em;  
+    }  
+  
+    #produit .tl-buy-error {  
+      grid-column: 1 / -1;  
+      grid-row: 3;  
+      margin-top: 8px;  
+    }  
+  }  
+</style>  
+  
+<style>  
+  @media (max-width: 767px) {  
+    #produit .tl-product-rating {  
+      gap: 6px;  
+      margin-bottom: 16px;  
+    }  
+  
+    #produit .tl-product-rating-text {  
+      font-size: 13px;  
+      line-height: 1.4;  
+    }  
+  }  
+</style>  
+  
+<style>  
+  #produit #tl-progressive-add {  
+    font-family: 'Plus Jakarta Sans', sans-serif;  
+    font-size: 14px;  
+    font-weight: 700;  
+    line-height: 1.3;  
+    letter-spacing: 0.02em;  
+  }  
+</style>  
+  
+  
+<style>  
+  #produit #tl-progressive-add {  
+    display: flex;  
+    align-items: center;  
+    justify-content: center;  
+    gap: 10px;  
+    min-width: 0;  
+    font-family: 'Plus Jakarta Sans', sans-serif;  
+    font-size: 13px;  
+    font-weight: 700;  
+    line-height: 1.3;  
+    letter-spacing: 0.02em;  
+  }  
+  
+  #produit .tl-add-label {  
+    min-width: 0;  
+  }  
+  
+  #produit .tl-add-separator {  
+    flex-shrink: 0;  
+    opacity: 0.65;  
+  }  
+  
+  #produit .tl-add-amount {  
+    flex-shrink: 0;  
+    white-space: nowrap;  
+    font-variant-numeric: tabular-nums;  
+  }  
+  
+  #produit #tl-progressive-section .tl-buy-price {  
+    display: none !important;  
+  
+  
+</style>  
+  
+  
+<style>  
+  /* Todos os dispositivos */  
+  #produit .tl-product-shipping-badge {  
+    display: none !important;  
+  }  
+  
+  #produit .tl-progressive-size-group {  
+    margin-top: 24px;  
+  }  
+  
+  #produit .tl-size-guide {  
+    font-size: 12px;  
+    line-height: 1.4;  
+  }  
+  
+  /* Apenas mobile */  
+  @media (max-width: 767px) {  
+    #produit #tl-progressive-section .tl-buy-layout {  
+      grid-template-columns: 90px minmax(0, 1fr);  
+      column-gap: 10px;  
+    }  
+  
+    #produit .tl-buy-quantity {  
+      box-sizing: border-box;  
+      width: 90px;  
+      min-width: 0;  
+    }  
+  
+    #produit #tl-progressive-minus,  
+    #produit #tl-progressive-plus {  
+      width: 28px;  
+      min-width: 0;  
+      flex: 0 0 28px;  
+      padding: 0;  
+    }  
+  
+    #produit #tl-progressive-quantity {  
+      box-sizing: border-box;  
+      width: 32px;  
+      min-width: 0;  
+      flex: 0 0 32px;  
+      padding: 0;  
+    }  
+  
+    #produit #tl-progressive-add {  
+      width: 100%;  
+      min-width: 0;  
+      margin-right: 0;  
+    }  
+  }  
+  
+</style>  
+  
+<style>  
+  @media (max-width: 767px) {  
+    #produit > .grid {  
+      row-gap: 20px !important;  
+    }  
+  }  
+</style>  
+  
+  
+  <!-- PRODUCT SHOWCASE -->  
+  <section id="produit" class="pt-10 pb-10 md:py-28 pl-6 md:px-12 max-w-7xl mx-auto">  
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">  
+      <!-- Gallery -->  
+      <div class="lg:col-span-7 relative">  
+        <div  
+          class="tl-product-gallery relative bg-cream-200 overflow-hidden aspect-[4/5] border border-cream-300/80 shadow-sm">  
+          <!-- Imagens -->  
+          {% assign gallery_blocks = section.blocks | where: 'type', 'gallery_image' %}  
+          {% assign gallery_count = 0 %}  
+  
+          {% for block in gallery_blocks %}  
+            {% if block.settings.image != blank %}  
+              {% assign gallery_count = gallery_count | plus: 1 %}  
+            {% endif %}  
+          {% endfor %}  
+  
+          {% if gallery_count == 0 %}  
+            {% assign gallery_count = 3 %}  
+          {% endif %}  
+  
+          {% assign gallery_track_width = gallery_count | times: 100 %}  
+          {% assign gallery_slide_width = 100.0 | divided_by: gallery_count %}  
+  
+          <div  
+            id="tl-carousel"  
+            class="flex transition-transform duration-500 ease-in-out h-full"  
+            style="width: {{ gallery_track_width }}%;"  
+          >  
+            {% assign has_gallery_images = false %}  
+  
+            {% for block in gallery_blocks %}  
+              {% if block.settings.image != blank %}  
+                {% assign has_gallery_images = true %}  
+  
+                <div  
+                  class="h-full flex-shrink-0"  
+                  style="width: {{ gallery_slide_width }}%;"  
+                  data-gallery-color="{{ block.settings.color | default: 'Beige' | escape }}"  
+                  {{ block.shopify_attributes }}  
+                >  
+                  <img  
+                    src="{{ block.settings.image | image_url: width: 1600 }}"  
+                    alt="{{ block.settings.alt | default: block.settings.image.alt | default: section.settings.product_title | escape }}"  
+                    class="w-full h-full object-cover"  
+                  >  
+                </div>  
+              {% endif %}  
+            {% endfor %}  
+  
+            {% unless has_gallery_images %}  
+              {% for i in (1..3) %}  
+                <div  
+                  class="h-full flex-shrink-0"  
+                  style="width: {{ gallery_slide_width }}%;"  
+                  data-gallery-color="Beige"  
+                >  
+                  <img  
+                    src="https://cdn.shopify.com/s/files/1/1061/0638/8829/files/shooting_{{ i }}.jpg"  
+                    alt="{{ section.settings.product_title | escape }}"  
+                    class="w-full h-full object-cover"  
+                  >  
+                </div>  
+              {% endfor %}  
+            {% endunless %}  
+          </div>  
+  
+        </div>  
+      </div>  
+  
+      <!-- Product Info -->  
+      <div class="tl-product-info lg:col-span-5 flex flex-col justify-center">  
+      <div class="tl-product-rating flex items-center gap-3 mb-3">  
+        <div class="text-choc-800 text-sm" aria-hidden="true">  
+          <span class="md:hidden">★ ★ ★ ★ ★</span>  
+          <span class="hidden md:inline">★ ★ ★ ★ ★</span>  
+        </div>  
+  
+        <span class="tl-product-rating-text text-sm text-choc-700/80 font-light">  
+          {{ section.settings.rating_score }} / 5  
+          ({{ section.settings.rating_count }}  
+          {% if request.locale.iso_code == 'de' %}  
+            verifizierte Bewertungen  
+          {% else %}  
+            avis vérifiés  
+          {% endif %})  
+        </span>  
+      </div>  
+        <h2 class="tl-serif text-3xl sm:text-4xl lg:text-5xl font-medium text-choc-900 mb-2">{{  
+          section.settings.product_title }}</h2>  
+        <p class="text-sm uppercase tracking-widest font-semibold text-choc-500 mb-4">{{  
+          section.settings.product_subtitle }}</p>  
+        <div class="flex items-baseline gap-3 mb-3">  
+        <span class="tl-product-price text-2xl md:text-3xl font-semibold text-choc-900">{{ featured_product.price | money }}</span>  
+          <span style="border: solid 1px rgb(140 104 88);"  
+            class="tl-product-shipping-badge text-sm text-choc-500 font-bold bg-cream-200 px-3 py-1.5 rounded-full">  
+            {% if request.locale.iso_code == 'de' %}Kostenloser Versand{% else %}Livraison Gratuite{% endif %}  
+          </span>  
+        </div>  
+  
+  
+          <script type="application/json" id="tl-progressive-product-data">  
+            {  
+              "id": {{ featured_product.id | json }},  
+              "title": {{ featured_product.title | json }},  
+              "options": {{ featured_product.options | json }},  
+              "variants": {{ featured_product.variants | json }},  
+              "moneyFormat": {{ shop.money_format | json }},  
+              "currency": {{ cart.currency.iso_code | json }}  
+            }  
+          </script>  
+  
+          <!-- PROGRESSIVE PURCHASE -->  
+          <div id="tl-progressive-section">  
+  
+            <style>  
+              #produit #tl-progressive-section {  
+                display: flex;  
+                flex-direction: column;  
+              }  
+  
+              #produit .tl-progressive-offer-group {  
+                order: -1;  
+                margin-bottom: 28px;  
+              }  
+            </style>  
+  
+  
+            <div class="tl-progressive-color-group">  
+              <p class="text-sm text-choc-900 mb-3">  
+                {% if request.locale.iso_code == 'de' %}  
+                  Farbe  
+                {% else %}  
+                  Couleur  
+                {% endif %}  
+                : <span id="tl-progressive-color-label"></span>  
+              </p>  
+  
+              <div  
+                id="tl-progressive-colors"  
+                class="flex flex-wrap gap-4"  
+              ></div>  
+            </div>  
+  
+            <div class="tl-progressive-size-group">  
+              <p class="text-sm text-choc-900 mb-3">  
+                {% if request.locale.iso_code == 'de' %}  
+                  Größe  
+                {% else %}  
+                  Taille  
+                {% endif %}  
+                : <span id="tl-progressive-size-label"></span>  
+              </p>  
+  
+              <div class="tl-sizes-guide-row mb-5">  
+                <div  
+                  id="tl-progressive-sizes"  
+                  class="flex flex-wrap gap-2"  
+                ></div>  
+  
+                <button  
+                  type="button"  
+                  onclick="openSizeModal()"  
+                  class="tl-size-guide my-5 inline-flex items-center gap-2 text-xs text-choc-500"  
+                >  
+                  <svg  
+                    width="18"  
+                    height="18"  
+                    viewBox="0 0 24 24"  
+                    fill="none"  
+                    stroke="currentColor"  
+                    stroke-width="1.5"  
+                    stroke-linecap="round"  
+                    stroke-linejoin="round"  
+                    aria-hidden="true"  
+                  >  
+                    <path d="M3 15 15 3l6 6L9 21z"/>  
+                    <path d="m7 11 2 2m2-6 2 2m2-6 2 2"/>  
+                  </svg>  
+  
+                  <span class="underline underline-offset-4">  
+                    {% if request.locale.iso_code == 'de' %}  
+                      Größentabelle  
+                    {% else %}  
+                      Guide des tailles  
+                    {% endif %}  
+                  </span>  
+                </button>  
+              </div>  
+            </div>  
+  
+            <div class="tl-progressive-offer-group">  
+              {% comment %}  
+                Manter estas faixas alinhadas com os descontos no Admin.  
+                Os títulos são usados para identificar o desconto aplicado.  
+              {% endcomment %}  
+  
+              <script type="application/json" id="tl-progressive-offer-data">  
+              {  
+                "enabled": true,  
+                "tiers": [  
+                  {  
+                    "minimum": 1,  
+                    "percentage": 0,  
+                    "discountTitle": ""  
+                  },  
+                  {  
+                    "minimum": 2,  
+                    "percentage": 5,  
+                    "discountTitle": "TRIMELLE Essentielle — 2 pièces — 5%"  
+                  },  
+                  {  
+                    "minimum": 3,  
+                    "percentage": 10,  
+                    "discountTitle": "TRIMELLE Essentielle — 3 pièces — 10%"  
+                  },  
+                  {  
+                    "minimum": 4,  
+                    "percentage": 15,  
+                    "discountTitle": "TRIMELLE Essentielle — 4+ pièces  — 15%"  
+                  }  
+                ]  
+              }  
+              </script>  
+  
+              <div  
+                id="tl-progressive-tier-cards"  
+                class="grid grid-cols-3 gap-2"  
+              ></div>  
+  
+              <p  
+                id="tl-progressive-tier-message"  
+                hidden  
+                aria-hidden="true"  
+                style="display:none !important;"  
+              ></p>  
+            </div>  
+  
+          
+  
+          <div class="tl-buy-layout">  
+            <label  
+              for="tl-progressive-quantity"  
+              class="tl-buy-label block text-sm text-choc-900 my-3"  
+            >  
+              {% if request.locale.iso_code == 'de' %}  
+                Menge  
+              {% else %}  
+                Quantité  
+              {% endif %}  
+            </label>  
+  
+            <div class="tl-buy-quantity flex items-center rounded-lg border border-cream-300">  
+              <button  
+                id="tl-progressive-minus"  
+                type="button"  
+                disabled  
+                aria-label="{% if request.locale.iso_code == 'de' %}Menge verringern{% else %}Réduire la quantité{% endif %}"  
+                class="w-11 h-11 text-choc-900"  
+              >−</button>  
+  
+              <input  
+                id="tl-progressive-quantity"  
+                type="number"  
+                min="1"  
+                step="1"  
+                value="1"  
+                disabled  
+                class="w-14 h-11 text-center bg-transparent text-choc-900"  
+              >  
+  
+              <button  
+                id="tl-progressive-plus"  
+                type="button"  
+                disabled  
+                aria-label="{% if request.locale.iso_code == 'de' %}Menge erhöhen{% else %}Augmenter la quantité{% endif %}"  
+                class="w-11 h-11 text-choc-900"  
+              >+</button>  
+            </div>  
+  
+            <div class="tl-buy-price text-right">  
+              <p  
+                id="tl-progressive-selection-subtotal"  
+                class="text-lg font-semibold text-choc-900"  
+              ></p>  
+  
+              <p  
+                id="tl-progressive-unit-price"  
+                class="text-xs text-choc-700"  
+              ></p>  
+            </div>  
+  
+            <p  
+              id="tl-progressive-error"  
+              class="tl-buy-error text-sm text-red-700 hidden"  
+              role="alert"  
+            ></p>  
+  
+            <button  
+              id="tl-progressive-add"  
+              type="button"  
+              disabled  
+              class="tl-buy-add w-full bg-choc-900 text-cream-50 text-xs tracking-wider uppercase mt-4 py-4 rounded-lg disabled:opacity-50"  
+            >  
+              {% if request.locale.iso_code == 'de' %}  
+                In den Warenkorb  
+              {% else %}  
+                Ajouter au panier  
+              {% endif %}  
+            </button>  
+          </div>  
+        </div>  
+  
+      </div>  
+  </div>  
+  
+  </section>  
+  
+  <!-- CRAFTSMANSHIP -->  
+  <section class="py-20 bg-cream-200 border-y border-cream-300">  
+    <div class="max-w-7xl mx-auto px-6 md:px-12">  
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">  
+          
+        <div class="relative img-zoom rounded-sm shadow-sm overflow-hidden border border-cream-300">  
+          <img src="https://cdn.shopify.com/s/files/1/1061/0638/8829/files/shooting_3.jpg" alt="Finition Trimelle"  
+            class="w-full h-[480px] md:h-[560px] object-cover">  
+          <div  
+            class="absolute bottom-6 left-6 right-6 bg-cream-100/95 backdrop-blur-md p-6 rounded-sm border border-cream-300">  
+            <p class="tl-serif text-lg text-choc-900 italic mb-1">{{ section.settings.craft_quote }}</p>  
+            <span class="text-[10px] uppercase tracking-widest text-choc-500 font-semibold">Atelier de Développement —  
+              Zurich</span>  
+          </div>  
+        </div>  
+        <div class="flex flex-col justify-center">  
+          <span class="text-sm uppercase tracking-[0.25em] font-semibold text-choc-500 mb-3">  
+            {% if request.locale.iso_code == 'de' %}Textiles Handwerk{% else %}Savoir-faire Textile{% endif %}  
+          </span>  
+          <h2 class="tl-serif text-3xl sm:text-4xl md:text-5xl font-medium text-choc-900 mb-8 leading-tight">{{  
+            section.settings.craft_title }}</h2>  
+          <div class="space-y-6">  
+            {% for i in (1..4) %}  
+            {% assign title_key = 'feature_' | append: i | append: '_title' %}  
+            {% assign text_key = 'feature_' | append: i | append: '_text' %}  
+            <div class="flex gap-4">  
+              <div  
+                class="w-8 h-8 rounded-full bg-cream-100 border border-cream-300 flex-shrink-0 flex items-center justify-center tl-serif text-choc-800 font-medium">  
+                0{{ i }}</div>  
+              <div>  
+                <h4 class="tl-serif text-xl font-medium text-choc-900 mb-1">{{ section.settings[title_key] }}</h4>  
+                <p class="text-sm sm:text-sm text-choc-800/75 font-light leading-relaxed">{{ section.settings[text_key]  
+                  }}</p>  
+              </div>  
+            </div>  
+            {% endfor %}  
+          </div>  
+        </div>  
+      </div>  
+    </div>  
+  </section>  
+  
+  <!-- LIFESTYLE -->  
+  <section class="py-24 px-6 md:px-12 bg-cream-100">  
+    <div class="max-w-7xl mx-auto">  
+      <div class="relative rounded-sm overflow-hidden min-h-[500px] flex items-center">  
+        {% if section.settings.lifestyle_image %}  
+        <img src="{{ section.settings.lifestyle_image | image_url: width: 2000 }}" alt="Trimelle lifestyle"  
+          class="absolute inset-0 w-full h-full object-cover">  
+        {% else %}  
+        <img src="https://cdn.shopify.com/s/files/1/1061/0638/8829/files/shooting_2.jpg" alt="Trimelle lifestyle"  
+          class="absolute inset-0 w-full h-full object-cover">  
+        {% endif %}  
+        <div class="absolute inset-0 bg-gradient-to-r from-choc-900/25"></div>  
+        <div class="relative z-10 p-8 sm:p-16 max-w-2xl text-cream-50">  
+          <h2 class="tl-serif text-3xl sm:text-5xl lg:text-6xl font-normal leading-tight mb-6">{{  
+            section.settings.lifestyle_headline }}</h2>  
+          <p class="text-sm md:text-base text-cream-200/90 font-light leading-relaxed mb-8 max-w-lg">{{  
+            section.settings.lifestyle_text }}</p>  
+          <a href="#produit"  
+            class="inline-flex items-center gap-3 px-8 py-4 bg-cream-50 text-choc-900 text-xs uppercase tracking-[0.2em] font-medium rounded-sm hover:bg-cream-200 transition">{{  
+            section.settings.lifestyle_cta }}</a>  
+        </div>  
+      </div>  
+    </div>  
+  </section>  
+  
+  <!-- BRAND STORY -->  
+  <section id="histoire" class="py-20 md:py-28 bg-cream-50 px-6 text-center border-t border-cream-300">  
+    <div class="max-w-3xl mx-auto">  
+      <span class="uppercase tracking-[0.3em] text-[11px] font-semibold text-choc-500 mb-3 block">  
+        {% if request.locale.iso_code == 'de' %}Unser Qualitätsversprechen{% else %}Notre Engagement Qualité{% endif %}  
+      </span>  
+      <h2 class="tl-serif text-3xl sm:text-4xl md:text-5xl font-medium text-choc-900 mb-6">{{  
+        section.settings.brand_title }}</h2>  
+      <div class="w-12 h-0.5 bg-choc-500 mx-auto mb-8"></div>  
+        <p class="text-sm sm:text-base text-choc-800/80 font-light leading-relaxed mb-6">{{ section.settings.brand_text_1 | newline_to_br }}</p>  
+      <p class="text-sm sm:text-base text-choc-800/80 font-light leading-relaxed mb-10">{{ section.settings.brand_text_2  
+        }}</p>  
+      <a href="#produit"  
+        class="inline-block w-full bg-choc-900 text-cream-50 font-medium text-xs tracking-wider uppercase py-4 px-8 text-center hover:bg-choc-500 transition-colors duration-300">  
+        {% if request.locale.iso_code == 'de' %}Entdecken Sie den Slip{% else %}Découvrir la culotte{% endif %}  
+      </a>  
+    </div>  
+  </section>  
+  
+  <!-- REVIEWS -->  
+  <section class="py-20 bg-cream-200 border-y border-cream-300 px-6 md:px-12">  
+    <div class="max-w-7xl mx-auto">  
+      <div class="text-center mb-14">  
+        <span class="uppercase tracking-[0.25em] text-[10px] font-semibold text-choc-500 block mb-2">  
+          {% if request.locale.iso_code == 'de' %}Authentische Erlebnisse{% else %}Expériences Authentiques{% endif %}  
+        </span>  
+        <h2 class="tl-serif text-3xl sm:text-4xl font-medium text-choc-900">  
+          {% if request.locale.iso_code == 'de' %}Was sie sagen{% else %}Ce que elles disent{% endif %}  
+        </h2>  
+      </div>  
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">  
+        <div class="overflow-x-auto -mx-6 px-6 pb-4">  
+          <div class="flex gap-5" style="width: max-content">  
+            {% for i in (1..3) %}  
+            {% assign text_key = 'review_' | append: i | append: '_text' %}  
+            {% assign author_key = 'review_' | append: i | append: '_author' %}  
+            {% assign loc_key = 'review_' | append: i | append: '_location' %}  
+            <div class="bg-cream-100 p-8 rounded-sm border border-cream-300/80 flex flex-col justify-between shadow-sm"  
+              style="width:80vw; max-width:340px">  
+              <div>  
+                <div class="flex text-choc-800 text-xs mb-4">★ ★ ★ ★ ★</div>  
+                <p class="tl-serif text-lg text-choc-900 leading-snug mb-4">"{{ section.settings[text_key] }}"</p>  
+              </div>  
+              <div class="pt-4 border-t border-cream-200 flex justify-between items-center text-xs">  
+                <span class="font-medium text-choc-900">{{ section.settings[author_key] }}</span>  
+                <span class="text-choc-700/60 font-light">{{ section.settings[loc_key] }} • Achat vérifié</span>  
+              </div>  
+            </div>  
+            {% endfor %}  
+          </div>  
+        </div>  
+  
+      </div>  
+    </div>  
+  </section>  
+  
+  <!-- GUIDE SIZE -->  
+  <section id="guide-tailles" class="py-20 px-6 md:px-12 max-w-7xl mx-auto">  
+    <div class="bg-choc-900 text-cream-50 rounded-sm p-8 md:p-14 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">  
+      <div class="md:col-span-8">  
+        <span class="uppercase tracking-[0.25em] text-[10px] font-medium text-nude-300 block mb-2">  
+          {% if request.locale.iso_code == 'de' %}Schnittführer{% else %}Guide de Coupe{% endif %}  
+        </span>  
+        <h2 class="tl-serif text-3xl sm:text-4xl font-normal mb-4">Trouvez votre taille Trimelle</h2>  
+        <p class="text-sm sm:text-sm text-cream-200/80 font-light leading-relaxed mb-6 max-w-xl">  
+          {% if request.locale.iso_code == 'de' %}Unsere Größen entsprechen den europäischen Normen. Zwischen zwei Größen? Wir empfehlen, die größere Größe zu wählen.{% else %}Notre taille est fidèle aux normes européennes. Entre deux tailles ? Nous vous recommandons de choisir la taille supérieure.{% endif %}  
+        </p>  
+        <button onclick="openSizeModal()"  
+          class="inline-flex items-center gap-2 px-6 py-3 bg-cream-50 text-choc-900 text-xs uppercase tracking-[0.2em] font-medium rounded-sm hover:bg-cream-200 transition">  
+          {% if request.locale.iso_code == 'de' %}Größentabelle ansehen{% else %}Voir le guide des tailles{% endif %}  
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"  
+              d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3" />  
+          </svg>  
+        </button>  
+      </div>  
+      <div class="md:col-span-4 flex justify-center">  
+        <div  
+          class="w-48 h-48 border border-nude-300/30 rounded-full flex flex-col items-center justify-center p-6 text-center bg-choc-800/50">  
+          <svg class="w-10 h-10 text-nude-300 mb-2" fill="none" stroke="currentColor" stroke-width="1.2"  
+            viewBox="0 0 24 24">  
+            <path stroke-linecap="round" stroke-linejoin="round"  
+              d="M12 21a9 9 0 0 1-9-9c0-4.97 4.03-9 9-9s9 4.03 9 9a9 9 0 0 1-9 9Z" />  
+          </svg>  
+          <span class="text-sm tl-serif text-cream-100">  
+            {% if request.locale.iso_code == 'de' %}Einfache Maßnahme{% else %}Prise de mesure simple{% endif %}  
+          </span>  
+          <span class="text-[10px] text-cream-300/70 font-light mt-1">  
+            {% if request.locale.iso_code == 'de' %}Taille & Hüfte{% else %}Tour de taille & hanches{% endif %}  
+          </span>  
+        </div>  
+      </div>  
+    </div>  
+  </section>  
+  
+  <!-- FAQ -->  
+  <section id="faq" class="py-20 bg-cream-100 px-6 md:px-12 border-t border-cream-300">  
+    <div class="max-w-3xl mx-auto">  
+      <div class="text-center mb-12">  
+        <span class="uppercase tracking-[0.25em] text-[10px] font-semibold text-choc-500 block mb-2">  
+          {% if request.locale.iso_code == 'de' %}Transparenz & Beratung{% else %}Transparence & Conseils{% endif %}  
+        </span>  
+        <h2 class="tl-serif text-3xl sm:text-4xl font-medium text-choc-900">  
+          {% if request.locale.iso_code == 'de' %}Häufig gestellte Fragen{% else %}Foire Aux Questions{% endif %}  
+        </h2>  
+      </div>  
+      <div class="space-y-4">  
+        {% for i in (1..4) %}  
+        {% assign q_key = 'faq_' | append: i | append: '_question' %}  
+        {% assign a_key = 'faq_' | append: i | append: '_answer' %}  
+        <div class="border border-cream-300 rounded-sm bg-cream-50 overflow-hidden">  
+          <button onclick="tlToggleFaq(this)"  
+            class="w-full text-left p-5 flex justify-between items-center text-sm font-medium text-choc-900 focus:outline-none">  
+            <span>{{ section.settings[q_key] }}</span>  
+            <span class="text-choc-500 text-xl font-light transition duration-200">+</span>  
+          </button>  
+          <div  
+            class="tl-faq-content hidden px-5 pb-5 text-xs text-choc-800/80 font-light leading-relaxed border-t border-cream-200/60 pt-3">  
+            {{ section.settings[a_key] }}  
+          </div>  
+        </div>  
+        {% endfor %}  
+      </div>  
+    </div>  
+  </section>  
+  
+  <!-- POLICY SLIDE-OVER -->  
+  <div id="tl-policy-overlay"  
+    class="fixed inset-0 z-[998] bg-choc-900/60 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"  
+    onclick="tlClosePolicy()"></div>  
+  <div id="tl-policy-drawer"  
+    class="fixed top-0 left-0 h-full w-full max-w-lg z-[999] bg-cream-50 shadow-2xl flex flex-col transition-transform duration-500 ease-in-out"  
+    style="transform: translateX(-100%);">  
+    <div class="flex items-center justify-between px-8 py-6 border-b border-cream-200 flex-shrink-0">  
+      <span id="tl-policy-title" class="tl-serif text-xl text-choc-900 tracking-wide"></span>  
+      <button onclick="tlClosePolicy()"  
+        class="text-choc-500 hover:text-choc-900 transition text-3xl font-light leading-none">×</button>  
+    </div>  
+    <div id="tl-policy-content"  
+      class="flex-1 overflow-y-auto px-8 py-6 text-sm text-choc-800/80 font-light leading-relaxed"></div>  
+  </div>  
+  
+  
+  <!-- FOOTER -->  
+  <footer class="bg-choc-900 text-cream-100 pt-20 pb-12 border-t border-choc-800 px-6 md:px-12">  
+    <div class="max-w-7xl mx-auto">  
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-choc-800">  
+        <div class="md:col-span-4">  
+          <a href="/" class="tl-serif text-3xl tracking-[0.2em] text-cream-50 font-medium uppercase inline-block">TRIMELLE</a>  
+          <!--<span class="block text-[9px] tracking-[0.3em] uppercase text-nude-300 mb-6">Entre nous, le confort change tout.</span>-->  
+          <p class="text-sm text-cream-300/70 font-light leading-relaxed max-w-sm mb-6">{{ section.settings.footer_tagline }}</p>  
+          <div class="text-sm text-cream-300/80 font-light">  
+            <p class="text-nude-300">contact@trimelle.ch</p>  
+          </div>  
+        </div>  
+        <div class="md:col-span-2">  
+          <h4 class="text-sm uppercase tracking-[0.2em] text-nude-200 font-medium mb-4">  
+            {% if request.locale.iso_code == 'de' %}Navigation{% else %}Navigation{% endif %}  
+          </h4>  
+          <ul class="space-y-2.5 text-xs text-cream-300/70 font-light">  
+            <li><a href="#accueil" class="hover:text-cream-50 transition">{% if request.locale.iso_code == 'de' %}Startseite{% else %}Accueil{% endif %}</a></li>  
+            <li><a href="#produit" class="hover:text-cream-50 transition">{% if request.locale.iso_code == 'de' %}Der Sculpting-Slip{% else %}La Culotte Sculptante{% endif %}</a></li>  
+            <li><a href="#histoire" class="hover:text-cream-50 transition">{% if request.locale.iso_code == 'de' %}Unsere Philosophie{% else %}Notre Philosophie{% endif %}</a></li>  
+            <li><button onclick="openSizeModal()" class="hover:text-cream-50 transition">{% if request.locale.iso_code == 'de' %}Größentabelle{% else %}Guide des tailles{% endif %}</button></li>  
+            <li><a href="#faq" class="hover:text-cream-50 transition">FAQ</a></li>  
+          </ul>  
+        </div>  
+        <div class="md:col-span-2">  
+          <h4 class="text-sm uppercase tracking-[0.2em] text-nude-200 font-medium mb-4">  
+            {% if request.locale.iso_code == 'de' %}Kundenservice{% else %}Service Client{% endif %}  
+          </h4>  
+          <ul class="space-y-2.5 text-xs text-cream-300/70 font-light">  
+            <li>  
+              <a href="/policies/privacy-policy"  
+                onclick="tlOpenPolicy(event,'/policies/privacy-policy','{% if request.locale.iso_code == 'de' %}Datenschutzrichtlinie{% else %}Politique de Confidentialité{% endif %}')"  
+                class="hover:text-cream-50 transition">  
+                {% if request.locale.iso_code == 'de' %}Datenschutzrichtlinie{% else %}Politique de Confidentialité{% endif %}  
+              </a>  
+            </li>  
+            <li>  
+              <a href="/policies/refund-policy"  
+                onclick="tlOpenPolicy(event,'/policies/refund-policy','{% if request.locale.iso_code == 'de' %}Rückerstattung & Rückgabe{% else %}Remboursement et Retour{% endif %}')"  
+                class="hover:text-cream-50 transition">  
+                {% if request.locale.iso_code == 'de' %}Rückerstattung & Rückgabe{% else %}Remboursement et Retour{% endif %}  
+              </a>  
+            </li>  
+            <li>  
+              <a href="/policies/shipping-policy"  
+                onclick="tlOpenPolicy(event,'/policies/shipping-policy','{% if request.locale.iso_code == 'de' %}Lieferung & Versand{% else %}Livraison et Expédition{% endif %}')"  
+                class="hover:text-cream-50 transition">  
+                {% if request.locale.iso_code == 'de' %}Lieferung & Versand{% else %}Livraison et Expédition{% endif %}  
+              </a>  
+            </li>  
+            <li>  
+              <a href="/policies/terms-of-service"  
+                onclick="tlOpenPolicy(event,'/policies/terms-of-service','{% if request.locale.iso_code == 'de' %}Allgemeine Geschäftsbedingungen{% else %}Conditions Générales{% endif %}')"  
+                class="hover:text-cream-50 transition">  
+                {% if request.locale.iso_code == 'de' %}Allgemeine Geschäftsbedingungen{% else %}Conditions Générales{% endif %}  
+              </a>  
+            </li>  
+            <li>  
+              <a href="/pages/mentions-legales"  
+                onclick="tlOpenPolicy(event,'/pages/mentions-legales','{% if request.locale.iso_code == 'de' %}Impressum{% else %}Mentions Légales{% endif %}')"  
+                class="hover:text-cream-50 transition">  
+                {% if request.locale.iso_code == 'de' %}Impressum{% else %}Mentions Légales{% endif %}  
+              </a>  
+            </li>  
+          </ul>  
+        </div>  
+      </div>  
+      <div class="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-cream-400/60 font-light">  
+        <p>{% if request.locale.iso_code == 'de' %}© 2026 TRIMELLE Switzerland. Alle Rechte vorbehalten.{% else %}© 2026 TRIMELLE Switzerland. Tous droits réservés.{% endif %}</p>  
+        <div class="flex items-center gap-4 text-cream-300/80 font-medium">  
+          <span>TWINT</span><span>•</span><span>VISA</span><span>•</span><span>MASTERCARD</span><span>•</span><span>APPLE PAY</span>  
+        </div>  
+      </div>  
+    </div>  
+  </footer>  
+  
+<style>  
+  @media (max-width: 767px) {  
+    #tl-cart-panel {  
+      width: 90%;  
+    }  
+  }  
+</style>  
+  
+  
+<style>  
+  #tl-cart-body .tl-cart-quantity {  
+    box-sizing: border-box;  
+    height: 36px;  
+    border: 1px solid #E6DCCF;  
+    border-radius: 30px;  
+    background: transparent;  
+  }  
+  
+  #tl-cart-body .tl-cart-quantity > button {  
+    width: 40px;  
+    height: 34px;  
+    padding: 0;  
+    background: transparent;  
+    color: #231610;  
+  }  
+  
+  #tl-cart-body .tl-cart-quantity > span {  
+    min-width: 28px;  
+    text-align: center;  
+  }  
+</style>  
+  
+  
+  <!-- ─── CART DRAWER ─-─ -->  
+  <div id="tl-cart-drawer" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-300">  
+  
+    <!-- Overlay backdrop -->  
+    <div onclick="toggleCart(false)" class="absolute inset-0 bg-choc-900/60 backdrop-blur-sm cursor-pointer"></div>  
+  
+    <!-- Panel -->  
+    <div id="tl-cart-panel"  
+      class="absolute top-0 right-0 h-full w-full max-w-md bg-cream-100 shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300 ease-out pointer-events-auto border-l border-cream-300">  
+  
+      <!-- Header -->  
+      <div class="p-3 border-b border-cream-300 flex justify-between items-center bg-cream-50">  
+        <h3 id="tl-cart-title" class="tl-serif text-2xl text-choc-900 font-medium">Votre Panier</h3>  
+        <button onclick="toggleCart(false)" class="text-choc-800 hover:text-choc-500 p-2">  
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />  
+          </svg>  
+        </button>  
+      </div>  
+  
+      <!-- ─── Order Summary (itens) — preenchido por tlLoadCart() ─── -->  
+      <div id="tl-cart-body" class="flex-1 overflow-y-auto p-6">  
+        <p class="text-sm text-choc-700/60 font-light text-center mt-8">Chargement...</p>  
+      </div>  
+  
+      <!-- ─── Details Payment + CTA ─── -->  
+      <div class="border-t border-cream-300 bg-cream-50 flex flex-col max-h-[45vh]">  
+  
+        <!-- Breakdown financeiro com scroll -->  
+        <div id="tl-cart-breakdown" class="px-6 pt-4 pb-2 space-y-1.5 text-sm overflow-y-auto flex-1"></div>  
+  
+        <!-- Linha tracejada -->  
+        <div class="mx-6 my-2 border-t border-dashed border-cream-400 flex-shrink-0"></div>  
+  
+        <!-- Réduction (se existir) -->  
+        <div id="tl-cart-reduction" class="px-6 pb-1 flex justify-between items-center flex-shrink-0 hidden">  
+          <span class="text-xs text-choc-700/60 font-light">  
+            {% if request.locale.iso_code == 'de' %}Rabatt{% else %}Réduction{% endif %}  
+          </span>  
+  
+          <span id="tl-cart-reduction-amount" class="text-xs text-choc-700/60 font-light"></span>  
+        </div>  
+  
+        <!-- Sous-total -->  
+        <div class="px-6 flex justify-between items-center flex-shrink-0">  
+          <span class="text-choc-800 font-semibold text-sm">  
+            {% if request.locale.iso_code == 'de' %}Zwischensumme{% else %}Sous-total{% endif %}  
+          </span>  
+          <span id="tl-cart-total" class="text-xl font-semibold text-choc-900"></span>  
+  
+        </div>  
+  
+        <!-- CTA Checkout -->  
+        <div class="p-4 flex-shrink-0">  
+          <a href="/checkout" id="tl-checkout-btn"  
+            class="flex items-center justify-center gap-3 w-full py-4 bg-choc-900 text-cream-50 text-xs uppercase tracking-[0.2em] font-medium rounded-sm hover:bg-choc-800 transition shadow">  
+            <span id="tl-checkout-label"></span>  
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/>  
+            </svg>  
+          </a>  
+        </div>  
+  
+      </div>  
+  
+    </div>  
+  </div>  
+  
+  <!-- SIZE MODAL -->  
+  <div id="tl-size-modal"  
+    class="fixed inset-0 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300"  
+    style="opacity:0; pointer-events:none; z-index:99999">  
+    <div onclick="closeSizeModal()" class="absolute inset-0 bg-choc-900/60 backdrop-blur-sm cursor-pointer"></div>  
+    <div class="relative bg-cream-50 border border-cream-300 w-full max-w-lg rounded-sm p-8 shadow-2xl text-choc-900"  
+      style="z-index:10000">  
+      <button onclick="closeSizeModal()" class="absolute top-4 right-4 text-choc-800 hover:text-choc-500">  
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />  
+        </svg>  
+      </button>  
+      <h3 class="tl-serif text-2xl font-medium mb-1">{% if request.locale.iso_code == 'de' %}Größentabelle Trimelle{% else %}Guide des Tailles Trimelle{% endif %}</h3>  
+      <p class="text-sm text-choc-700/70 font-light mb-6">{% if request.locale.iso_code == 'de' %}Messen Sie direkt am Körper.{% else %}Prenez vos mesures directement sur le corps.{% endif %}</p>  
+  
+      <img src="https://cdn.shopify.com/s/files/1/1061/0638/8829/files/size_guide_modal.png" alt="Guide des Tailles"  
+        class="w-full rounded-xl mb-4">  
+  
+      <div class="overflow-x-auto mb-6">  
+        <table class="w-full text-center text-xs border-collapse">  
+          <thead>  
+            <tr class="border-b border-choc-800/20 text-choc-900 uppercase font-semibold">  
+              <th class="py-2.5">{% if request.locale.iso_code == 'de' %}Größe{% else %}Taille{% endif %}</th>  
+              <th class="py-2.5">{% if request.locale.iso_code == 'de' %}Taillenumfang{% else %}Tour de Taille{% endif %}</th>  
+              <th class="py-2.5">{% if request.locale.iso_code == 'de' %}Hüftumfang{% else %}Tour de Hanches{% endif %}</th>  
+            </tr>  
+          </thead>  
+          <tbody class="divide-y divide-cream-200 text-choc-800/80 font-light">  
+            <tr>  
+              <td class="py-2 font-medium">S</td>  
+              <td>66 - 71 cm</td>  
+              <td>92 - 97 cm</td>  
+            </tr>  
+            <tr>  
+              <td class="py-2 font-medium">M</td>  
+              <td>72 - 77 cm</td>  
+              <td>98 - 103 cm</td>  
+            </tr>  
+            <tr>  
+              <td class="py-2 font-medium">L</td>  
+              <td>78 - 83 cm</td>  
+              <td>104 - 109 cm</td>  
+            </tr>  
+            <tr>  
+              <td class="py-2 font-medium">XL</td>  
+              <td>84 - 90 cm</td>  
+              <td>110 - 116 cm</td>  
+            </tr>  
+            <tr>  
+              <td class="py-2 font-medium">XXL</td>  
+              <td>91 - 98 cm</td>  
+              <td>117 - 124 cm</td>  
+            </tr>  
+          </tbody>  
+        </table>  
+      </div>  
+      <p class="text-[11px] text-choc-700/70 italic bg-cream-200 p-3 rounded-sm border border-cream-300">  
+        {% if request.locale.iso_code == 'de' %}💡 Zwischen zwei Größen? Wählen Sie die größere Größe für optimalen Komfort.{% else %}💡 Entre deux tailles ? Choisissez la taille supérieure pour un confort optimal.{% endif %}  
+      </p>  
+    </div>  
+  </div>  
+  
+  <!-- ─── MODAL: Confirmação de delete -->  
+  <div id="tl-delete-modal" class="fixed inset-0 z-[99999] flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-200">  
+    <div onclick="tlCloseDeleteModal()" class="absolute inset-0 bg-choc-900/50 backdrop-blur-sm"></div>  
+    <div class="relative bg-cream-50 rounded-2xl shadow-2xl px-8 py-7 mx-6 text-center space-y-4 max-w-xs w-full">  
+      <p id="tl-delete-modal-msg" class="tl-serif text-lg text-choc-900 leading-snug"></p>  
+      <div class="flex gap-3 pt-1">  
+        <button onclick="tlCloseDeleteModal()"  
+          id="tl-delete-modal-no"  
+          class="flex-1 py-3 border border-cream-300 text-choc-800 text-xs uppercase tracking-widest rounded-xl hover:border-choc-700 transition">  
+        </button>  
+        <button id="tl-delete-modal-confirm"  
+          class="flex-1 py-3 bg-choc-900 text-cream-50 text-xs uppercase tracking-widest rounded-xl hover:bg-choc-800 transition">  
+        </button>  
+      </div>  
+    </div>  
+  </div>  
+  
+  <!-- STORY MODAL -->  
+  <div id="tl-story-modal"  
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">  
+    <div onclick="closeStoryModal()" class="absolute inset-0 bg-choc-900/60 backdrop-blur-sm cursor-pointer"></div>  
+    <div  
+      class="relative bg-cream-50 border border-cream-300 w-full max-w-xl rounded-sm p-8 shadow-2xl z-10 text-choc-900">  
+      <button onclick="closeStoryModal()" class="absolute top-4 right-4 text-choc-800 hover:text-choc-500">  
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />  
+        </svg>  
+      </button>  
+      <span class="text-[10px] uppercase tracking-widest text-choc-500 font-semibold block mb-1">Maison Trimelle —  
+        Zurich</span>  
+      <h3 class="tl-serif text-3xl font-medium mb-4">L'Art de l'Essentiel Perfectionné</h3>  
+      <h3 class="tl-serif text-2xl font-medium mb-1">{% if request.locale.iso_code == 'de' %}Größentabelle Trimelle{% else %}Guide des Tailles Trimelle{% endif %}</h3>  
+      <div class="space-y-3 text-xs sm:text-sm text-choc-800/80 font-light leading-relaxed">  
+        <p>{{ section.settings.brand_text_1 }}</p>  
+        <p>{{ section.settings.brand_text_2 }}</p>  
+      </div>  
+    </div>  
+  </div>  
+  
+  <!-- TOAST -->  
+  <div id="tl-toast"  
+    class="fixed bottom-6 right-6 z-50 bg-choc-900 text-cream-50 px-6 py-4 rounded-sm shadow-xl text-xs flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 border border-choc-700">  
+    <svg class="w-5 h-5 text-nude-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />  
+    </svg>  
+    <span id="tl-toast-msg">Produit ajouté à votre panier.</span>  
+  </div>  
+  
+  <!-- CART FAB -->  
+  <div class="fixed bottom-52 right-6 z-50">  
+    <button onclick="tlOpenCart()" class="relative bg-cream-100/90 backdrop-blur-sm text-choc-900 w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:bg-cream-200 transition-colors border">  
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24">  
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"/>  
+      </svg>  
+      <span id="tl-cart-fab-count"  
+        class="absolute -top-1 -right-1 text-cream-50 text-[12px] w-4 h-4 rounded-full hidden items-center justify-center border border-cream-100 p-2"  
+        style="background-color:#fd3500; font-weight:700;">0</span>  
+    </button>  
+    <!-- DE/FR -->  
+    {% if request.locale.iso_code == 'de' %}  
+      {% assign french_path = request.path | replace_first: '/de', '' %}  
+      {% if french_path == blank %}  
+        {% assign french_path = '/' %}  
+      {% endif %}  
+      <a href="{{ french_path }}" onclick="sessionStorage.setItem('trimelleLocaleScrollY', window.scrollY)" class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-8 h-8 rounded-full bg-cream-100/90 backdrop-blur-sm text-choc-900 flex items-center justify-center shadow-lg border border-cream-300 text-[10px] uppercase tracking-widest font-medium hover:bg-cream-200 transition-colors"  
+>FR</a>  
+    {% else %}  
+      <a href="/de{{ request.path }}" onclick="sessionStorage.setItem('trimelleLocaleScrollY', window.scrollY)" class="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-8 h-8 rounded-full bg-cream-100/90 backdrop-blur-sm text-choc-900 flex items-center justify-center shadow-lg border border-cream-300 text-[10px] uppercase tracking-widest font-medium hover:bg-cream-200 transition-colors"  
+>DE</a>  
+    {% endif %}  
+  </div>  
+  
+</div>  
+  
+{% schema %}  
+{  
+  "name": "Trimelle Landing",  
+  "settings": [  
+    { "type": "text",   
+      "id": "topbar_text",   
+      "label": "Top Bar Text",   
+      "default": "Livraison Gratuite — Retours sous 15 jours" },  
+    { "type": "text", "id": "free_shipping_threshold", "label": "Free Shipping Threshold", "default": "70" },  
+    { "type": "image_picker", "id": "hero_image", "label": "Hero Image" },  
+    { "type": "text", "id": "hero_badge", "label": "Hero Badge", "default": "Haute Ingénierie Textile" },  
+    { "type": "text", "id": "hero_title", "label": "Hero Title", "default": "La silhouette redessinée." },  
+    { "type": "text", "id": "hero_subtitle", "label": "Hero Subtitle (italic)", "default": "Le confort préservé." },  
+    { "type": "textarea", "id": "hero_description", "label": "Hero Description", "default": "Une culotte sculptante invisible de haute taille, pensée pour accompagner chaque mouvement sans jamais entraver votre liberté." },  
+    { "type": "text", "id": "hero_cta_primary", "label": "Hero CTA Primary", "default": "Découvrir la culotte" },  
+    { "type": "text", "id": "hero_cta_secondary", "label": "Hero CTA Secondary", "default": "Notre Philosophie" },  
+    { "type": "text", "id": "benefit_1_title", "label": "Benefit 1 Title", "default": "Sculpte en douceur" },  
+    { "type": "textarea", "id": "benefit_1_text", "label": "Benefit 1 Text", "default": "Compression ciblée au niveau de la taille et de l'abdomen sans effet de compression excessive." },  
+    { "type": "text", "id": "benefit_2_title", "label": "Benefit 2 Title", "default": "Invisible sous les vêtements" },  
+    { "type": "textarea", "id": "benefit_2_text", "label": "Benefit 2 Text", "default": "Bords thermo-collés ultrafins découpés au laser sans aucune couture apparente." },  
+    { "type": "text", "id": "benefit_3_title", "label": "Benefit 3 Title", "default": "Confort toute la journée" },  
+    { "type": "textarea", "id": "benefit_3_text", "label": "Benefit 3 Text", "default": "Microfibre respirante régulatrice de température avec bande silicone antiglisse." },  
+    { "type": "text", "id": "product_title", "label": "Product Title", "default": "La Culotte Sculptante" },  
+    { "type": "text", "id": "product_subtitle", "label": "Product Subtitle", "default": "Maintien sculptant — Confort seconde peau" },  
+    { "type": "textarea", "id": "product_description", "label": "Product Description", "default": "Conçue dans un tricot circulaire suisse sans coutures latérales, cette culotte haute façonne délicatement la taille et le bas du dos tout en restant totalement imperceptible." },  
+    { "type": "text", "id": "rating_score", "label": "Rating Score", "default": "4.9" },  
+    { "type": "text", "id": "rating_count", "label": "Rating Count", "default": "128" },  
+    { "type": "image_picker", "id": "craft_image", "label": "Craftsmanship — Desktop / padrão" },  
+    { "type": "image_picker", "id": "craft_image_mobile", "label": "Craftsmanship — Mobile", "info": "Opcional. Se ficar vazio, usa a imagem desktop." },  
+    { "type": "textarea", "id": "craft_quote", "label": "Craftsmanship Quote", "default": "Une sensation de seconde peau absolue, sans marques rouges ni sensation d'étouffement." },  
+    { "type": "text", "id": "craft_title", "label": "Craftsmanship Title", "default": "Pensée jusque dans les moindres détails" },  
+    { "type": "text", "id": "feature_1_title", "label": "Feature 1 Title", "default": "Compression Localisée Anatomique" },  
+    { "type": "textarea", "id": "feature_1_text", "label": "Feature 1 Text", "default": "Zones de maintien ciblées qui affinent la taille et soutiennent doucement le bas du dos." },  
+    { "type": "text", "id": "feature_2_title", "label": "Feature 2 Title", "default": "Bande Silicone Micro-Injectée Anti-Glisse" },  
+    { "type": "textarea", "id": "feature_2_text", "label": "Feature 2 Text", "default": "Une fine lisière en silicone médical empêche tout roulement indésirable." },  
+    { "type": "text", "id": "feature_3_title", "label": "Feature 3 Title", "default": "Fibre Thermorégulatrice Ultrafine" },  
+    { "type": "textarea", "id": "feature_3_text", "label": "Feature 3 Text", "default": "Mélange exclusif de polyamide recyclé et d'élasthanne haute densité." },  
+    { "type": "text", "id": "feature_4_title", "label": "Feature 4 Title", "default": "Découpe Laser Invisible" },  
+    { "type": "textarea", "id": "feature_4_text", "label": "Feature 4 Text", "default": "Absence totale d'ourlets aux cuisses pour éliminer toute démarcation." },  
+    { "type": "image_picker", "id": "lifestyle_image", "label": "Lifestyle Image" },  
+    { "type": "text", "id": "lifestyle_headline", "label": "Lifestyle Headline", "default": "Invisible sous vos vêtements. Évidente dans votre confiance." },  
+    { "type": "textarea", "id": "lifestyle_text", "label": "Lifestyle Text", "default": "Parce qu'un sous-vêtement sculptant ne doit pas modifier qui vous êtes, mais simplement vous permettre de porter toutes vos tenues préférées." },  
+    { "type": "text", "id": "lifestyle_cta", "label": "Lifestyle CTA", "default": "Commander la vôtre" },  
+    { "type": "text", "id": "brand_title", "label": "Brand Story Title", "default": "Une seule pièce. Pensée dans les moindres détails." },  
+    { "type": "textarea", "id": "brand_text_1", "label": "Brand Text 1", "default": "Chez TRIMELLE, nous refusons la surproduction et les collections éphémères." },  
+    { "type": "textarea", "id": "brand_text_2", "label": "Brand Text 2", "default": "Pendant plus de 18 mois, nous avons testé des dizaines de prototypes textiles auprès de femmes aux morphologies variées en Suisse." },  
+    { "type": "textarea", "id": "review_1_text", "label": "Review 1 Text", "default": "Enfin une culotte sculptante qui ne roule pas à la taille quand je m'assieds au bureau." },  
+    { "type": "text", "id": "review_1_author", "label": "Review 1 Author", "default": "Éléonore V." },  
+    { "type": "text", "id": "review_1_location", "label": "Review 1 Location", "default": "Genève" },  
+    { "type": "textarea", "id": "review_2_text", "label": "Review 2 Text", "default": "Portée sous une robe en soie ultra fine pour un mariage à Lausanne : aucune démarcation !" },  
+    { "type": "text", "id": "review_2_author", "label": "Review 2 Author", "default": "Claire M." },  
+    { "type": "text", "id": "review_2_location", "label": "Review 2 Location", "default": "Lausanne" },  
+    { "type": "textarea", "id": "review_3_text", "label": "Review 3 Text", "default": "Maintien très naturel sans se sentir comprimée. Le guide des tailles était très précis." },  
+    { "type": "text", "id": "review_3_author", "label": "Review 3 Author", "default": "Sophie B." },  
+    { "type": "text", "id": "review_3_location", "label": "Review 3 Location", "default": "Zürich" },  
+    { "type": "textarea", "id": "faq_1_question", "label": "FAQ 1 Question", "default": "Quel niveau de maintien offre la culotte Trimelle ?" },  
+    { "type": "textarea", "id": "faq_1_answer", "label": "FAQ 1 Answer", "default": "La culotte offre un maintien moyen à fort ciblé, suffisamment souple pour être portée pendant une journée complète." },  
+    { "type": "textarea", "id": "faq_2_question", "label": "FAQ 2 Question", "default": "La culotte est-elle réellement invisible sous les robes moulantes ?" },  
+    { "type": "textarea", "id": "faq_2_answer", "label": "FAQ 2 Answer", "default": "Oui. Grâce aux découpes laser sans couture et aux finitions ultra-plates thermosoudées, aucun pli ni démarcation." },  
+    { "type": "textarea", "id": "faq_3_question", "label": "FAQ 3 Question", "default": "Comment entretenir ma culotte sculptante ?" },  
+    { "type": "textarea", "id": "faq_3_answer", "label": "FAQ 3 Answer", "default": "Lavage en machine à 30°C dans un filet délicat. Évitez l'adoucissant et le séchage en machine." },  
+    { "type": "textarea", "id": "faq_4_question", "label": "FAQ 4 Question", "default": "Quels sont les délais de livraison en Suisse ?" },  
+    { "type": "textarea", "id": "faq_4_answer", "label": "FAQ 4 Answer", "default": "Expédition sous 24h depuis la Suisse avec La Poste (Priority). Livraison offerte dès CHF 70. Retours sous 30 jours." },  
+    { "type": "textarea", "id": "footer_tagline", "label": "Footer Tagline", "default": "Marque suisse spécialisée dans les sous-vêtements sculptants invisibles de haute précision." },  
+    { "type": "text", "id": "newsletter_title", "label": "Newsletter Title", "default": "Newsletter" }  
+  ],  
+    "blocks": [  
+    {  
+      "type": "gallery_image",  
+      "name": "Photo produit",  
+      "settings": [  
+        {  
+          "type": "select",  
+          "id": "color",  
+          "label": "Couleur",  
+          "options": [  
+            { "value": "Beige", "label": "Beige" },  
+            { "value": "Black", "label": "Noir" }  
+          ],  
+          "default": "Beige"  
+        },  
+        {  
+          "type": "image_picker",  
+          "id": "image",  
+          "label": "Image"  
+        },  
+        {  
+          "type": "text",  
+          "id": "alt",  
+          "label": "Texte alternatif"  
+        }  
+      ]  
+    }  
+  ],  
+  "presets": [  
+    { "name": "Trimelle Landing Page" }  
+  ]  
+}  
+{% endschema %}  
+  
+{% render 'trimelle-landing-js' %}  
